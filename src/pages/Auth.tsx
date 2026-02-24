@@ -44,7 +44,8 @@ export default function Auth() {
     if (error) {
       toast({ title: 'Signup failed', description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Account created', description: 'You can now log in.' });
+      toast({ title: 'Account created', description: 'Check your email to confirm, or log in if email confirmation is disabled.' });
+      navigate('/dashboard');
     }
   };
 
