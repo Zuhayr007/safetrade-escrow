@@ -11,16 +11,26 @@ export default function AdminDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchAll = async () => {
+    const { data } = await supabase
+      .from('transactions')
+      .select('*, buyer:profiles!transactions_buyer_id_fkey(*), seller:profiles!transactions_seller_id_fkey(*)')
+      .order('created_at', { ascending: false });
+    setTransactions(data ?? []);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
-        .from('transactions')
-        .select('*, buyer:profiles!transactions_buyer_id_fkey(*), seller:profiles!transactions_seller_id_fkey(*)')
-        .order('created_at', { ascending: false });
-      setTransactions(data ?? []);
-      setLoading(false);
-    };
-    fetch();
+    fetchAll();
+
+    const channel = supabase
+      .channel('admin-transactions')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+        fetchAll();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const metrics = [
