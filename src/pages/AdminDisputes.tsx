@@ -22,7 +22,18 @@ export default function AdminDisputes() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchDisputes(); }, []);
+  useEffect(() => {
+    fetchDisputes();
+
+    const channel = supabase
+      .channel('admin-disputes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'disputes' }, () => {
+        fetchDisputes();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const handleResolve = async (dispute: Dispute, resolution: 'refund' | 'release') => {
     if (!profile) return;

@@ -28,7 +28,21 @@ export default function AdminUsers() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchUsers(); }, []);
+  useEffect(() => {
+    fetchUsers();
+
+    const channel = supabase
+      .channel('admin-users')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, () => {
+        fetchUsers();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchUsers();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const addRole = async (userId: string, role: AppRole) => {
     const { error } = await supabase.from('user_roles').upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });

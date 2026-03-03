@@ -18,19 +18,29 @@ export default function Dashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
 
+  const fetchTransactions = async () => {
+    if (!profile) return;
+    const { data } = await supabase
+      .from('transactions')
+      .select('*, buyer:profiles!transactions_buyer_id_fkey(*), seller:profiles!transactions_seller_id_fkey(*)')
+      .or(`buyer_id.eq.${profile.id},seller_id.eq.${profile.id},seller_email_invited.eq.${profile.email}`)
+      .order('created_at', { ascending: false });
+    setTransactions(data ?? []);
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (!profile) return;
-    const fetch = async () => {
-      // Fetch transactions where user is buyer or seller, or seller_email_invited matches
-      const { data } = await supabase
-        .from('transactions')
-        .select('*, buyer:profiles!transactions_buyer_id_fkey(*), seller:profiles!transactions_seller_id_fkey(*)')
-        .or(`buyer_id.eq.${profile.id},seller_id.eq.${profile.id},seller_email_invited.eq.${profile.email}`)
-        .order('created_at', { ascending: false });
-      setTransactions(data ?? []);
-      setLoading(false);
-    };
-    fetch();
+    fetchTransactions();
+
+    const channel = supabase
+      .channel('dashboard-transactions')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+        fetchTransactions();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [profile]);
 
   const filtered = transactions.filter(t => {

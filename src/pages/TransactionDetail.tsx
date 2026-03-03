@@ -39,7 +39,22 @@ export default function TransactionDetail() {
     setLoading(false);
   }, [id]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+
+    if (!id) return;
+    const channel = supabase
+      .channel(`txn-detail-${id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `id=eq.${id}` }, () => {
+        fetchData();
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transaction_events', filter: `transaction_id=eq.${id}` }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [fetchData, id]);
 
   if (loading) {
     return <Layout><div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></Layout>;
