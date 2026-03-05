@@ -128,7 +128,7 @@ export default function NewTransaction() {
               <Textarea id="description" name="description" placeholder="Describe the goods or services..." rows={3} />
               {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="amount">Amount (ZAR)</Label>
                 <Input id="amount" name="amount" type="number" step="0.01" min="0.01" placeholder="1000.00" />

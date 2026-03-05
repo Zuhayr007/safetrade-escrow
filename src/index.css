@@ -89,6 +89,10 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply overflow-x-hidden w-full;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
