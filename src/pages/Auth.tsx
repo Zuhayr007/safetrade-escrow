@@ -21,11 +21,31 @@ export default function Auth() {
   }
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard' },
-    });
-    if (error) {
+    try {
+      const isCustomOrLocalDomain =
+        !window.location.hostname.includes('lovable.app') &&
+        !window.location.hostname.includes('lovableproject.com');
+
+      if (isCustomOrLocalDomain) {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            skipBrowserRedirect: true,
+          },
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.location.href = data.url;
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: `${window.location.origin}/auth/callback` },
+        });
+        if (error) throw error;
+      }
+    } catch (error: any) {
       toast({ title: 'Google sign-in failed', description: error.message, variant: 'destructive' });
     }
   };
