@@ -3,8 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationBell } from './NotificationBell';
 import { Button } from '@/components/ui/button';
-import { Shield, LogOut, LayoutDashboard, Plus, Menu } from 'lucide-react';
+import { Shield, LogOut, LayoutDashboard, Plus, Menu, User, Settings } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
+
+function getInitials(name?: string | null, email?: string | null): string {
+  if (name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+  return (email?.[0] ?? 'U').toUpperCase();
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, profile, hasRole, signOut } = useAuth();
@@ -38,6 +48,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </>
   );
 
+  const profileAvatar = (
+    <Avatar className="h-8 w-8 cursor-pointer">
+      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+        {getInitials(profile?.display_name, profile?.email)}
+      </AvatarFallback>
+    </Avatar>
+  );
+
+  const profileMenu = (
+    <div className="flex flex-col">
+      <div className="px-3 py-2">
+        <p className="text-sm font-medium">{profile?.display_name || 'User'}</p>
+        <p className="text-xs text-muted-foreground">{profile?.email}</p>
+      </div>
+      <Separator />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="justify-start mt-1"
+        onClick={() => { setOpen(false); navigate('/profile'); }}
+      >
+        <Settings className="h-4 w-4 mr-2" /> Profile Settings
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="justify-start text-destructive hover:text-destructive"
+        onClick={() => { setOpen(false); handleSignOut(); }}
+      >
+        <LogOut className="h-4 w-4 mr-2" /> Sign Out
+      </Button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card sticky top-0 z-50">
@@ -52,12 +96,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div className="hidden md:flex items-center gap-2">
                 {navItems}
                 <NotificationBell />
-                <span className="text-sm text-muted-foreground">
-                  {profile?.display_name || profile?.email}
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4" />
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    {profileAvatar}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-2" align="end">
+                    {profileMenu}
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Mobile nav */}
@@ -75,11 +121,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </SheetHeader>
                     <div className="flex flex-col gap-2 mt-4">
                       {navItems}
-                      <div className="border-t border-border my-2" />
-                      <span className="text-sm text-muted-foreground px-3">
-                        {profile?.display_name || profile?.email}
-                      </span>
-                      <Button variant="ghost" size="sm" onClick={() => { setOpen(false); handleSignOut(); }}>
+                      <Separator className="my-2" />
+                      <div className="flex items-center gap-3 px-3 py-2">
+                        <Avatar className="h-9 w-9">
+                          <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                            {getInitials(profile?.display_name, profile?.email)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{profile?.display_name || 'User'}</p>
+                          <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="justify-start" onClick={() => { setOpen(false); navigate('/profile'); }}>
+                        <Settings className="h-4 w-4 mr-1" /> Profile Settings
+                      </Button>
+                      <Button variant="ghost" size="sm" className="justify-start text-destructive hover:text-destructive" onClick={() => { setOpen(false); handleSignOut(); }}>
                         <LogOut className="h-4 w-4 mr-1" /> Sign Out
                       </Button>
                     </div>
