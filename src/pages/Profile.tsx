@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { Save, User } from 'lucide-react';
-
+import { Save, Lock } from 'lucide-react';
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
     return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -21,13 +20,13 @@ export default function Profile() {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || '');
-      setEmail(profile.email || '');
     }
   }, [profile]);
 
@@ -36,7 +35,6 @@ export default function Profile() {
     setSaving(true);
 
     try {
-      // Update display name in profiles table
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ display_name: displayName.trim() })
@@ -44,16 +42,22 @@ export default function Profile() {
 
       if (profileError) throw profileError;
 
-      // Update email via Supabase Auth if changed
-      if (email.trim() !== user.email) {
-        const { error: emailError } = await supabase.auth.updateUser({
-          email: email.trim(),
-        });
-        if (emailError) throw emailError;
-        toast({
-          title: 'Confirmation sent',
-          description: 'Check your new email to confirm the change.',
-        });
+      if (newPassword) {
+        if (newPassword !== confirmPassword) {
+          toast({ title: 'Error', description: 'Passwords do not match.', variant: 'destructive' });
+          setSaving(false);
+          return;
+        }
+        if (newPassword.length < 6) {
+          toast({ title: 'Error', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+          setSaving(false);
+          return;
+        }
+        const { error: pwError } = await supabase.auth.updateUser({ password: newPassword });
+        if (pwError) throw pwError;
+        setNewPassword('');
+        setConfirmPassword('');
+        toast({ title: 'Password updated', description: 'Your password has been changed.' });
       }
 
       toast({ title: 'Profile updated', description: 'Your profile has been saved.' });
@@ -90,17 +94,26 @@ export default function Profile() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="newPassword" className="flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5" /> New Password
+              </Label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                placeholder="Leave blank to keep current"
               />
-              <p className="text-xs text-muted-foreground">
-                Changing your email will require confirmation.
-              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter new password"
+              />
             </div>
             <Button onClick={handleSave} disabled={saving} className="w-full">
               <Save className="h-4 w-4 mr-2" />
