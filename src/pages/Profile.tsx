@@ -117,7 +117,7 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Hero profile header */}
         <Card className="overflow-hidden">
-          <div className="h-24 bg-gradient-to-r from-primary/80 to-accent/60" />
+          <div className="h-28 bg-gradient-to-r from-primary/90 via-primary/40 to-accent/50 backdrop-blur-sm" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.4) 40%, hsl(var(--accent) / 0.5) 70%, hsl(var(--accent) / 0.2) 100%)' }} />
           <div className="px-6 pb-6 -mt-12">
             <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
               <Avatar className="h-24 w-24 text-3xl border-4 border-card shadow-lg">
