@@ -146,7 +146,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Sheet>
               </div>
             </>
-          )}
+            )}
+          </div>
         </div>
       </header>
       <main className="container mx-auto px-4 py-6">{children}</main>
