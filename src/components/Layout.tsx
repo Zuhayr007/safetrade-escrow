@@ -91,7 +91,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             EscrowShield
           </Link>
 
-          {user && (
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <>
               {/* Desktop nav */}
               <div className="hidden md:flex items-center gap-2">
