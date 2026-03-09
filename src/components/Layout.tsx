@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { NotificationBell } from './NotificationBell';
-import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Shield, LogOut, LayoutDashboard, Plus, Menu, Settings } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -96,7 +95,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               {/* Desktop nav */}
               <div className="hidden md:flex items-center gap-2">
                 {navItems}
-                <ThemeToggle />
                 <NotificationBell />
                 <Popover>
                   <PopoverTrigger asChild>
@@ -110,7 +108,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               {/* Mobile nav */}
               <div className="flex md:hidden items-center gap-1">
-                <ThemeToggle />
                 <NotificationBell />
                 <Sheet open={open} onOpenChange={setOpen}>
                   <SheetTrigger asChild>
