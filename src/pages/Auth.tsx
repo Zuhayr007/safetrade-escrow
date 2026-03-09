@@ -131,8 +131,8 @@ export default function Auth() {
                   <Label htmlFor="login-password">Password</Label>
                   <Input id="login-password" name="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign In'}
+                <Button type="submit" className="w-full" disabled={formLoading}>
+                  {formLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
             </TabsContent>
