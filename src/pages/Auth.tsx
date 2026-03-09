@@ -81,7 +81,7 @@ export default function Auth() {
       fd.get('password') as string,
       fd.get('displayName') as string,
     );
-    setLoading(false);
+    setFormLoading(false);
     if (error) {
       toast({ title: 'Signup failed', description: error.message, variant: 'destructive' });
     } else {
