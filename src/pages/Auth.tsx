@@ -150,8 +150,8 @@ export default function Auth() {
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" name="password" type="password" required minLength={6} />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Creating account...' : 'Create Account'}
+                <Button type="submit" className="w-full" disabled={formLoading}>
+                  {formLoading ? 'Creating account...' : 'Create Account'}
                 </Button>
               </form>
             </TabsContent>
