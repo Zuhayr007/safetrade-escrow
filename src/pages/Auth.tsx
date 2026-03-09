@@ -64,7 +64,7 @@ export default function Auth() {
     setFormLoading(true);
     const fd = new FormData(e.currentTarget);
     const { error } = await signIn(fd.get('email') as string, fd.get('password') as string);
-    setLoading(false);
+    setFormLoading(false);
     if (error) {
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
     } else {
