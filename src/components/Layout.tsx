@@ -108,7 +108,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               {/* Mobile nav */}
               <div className="flex md:hidden items-center gap-1">
-                <ThemeToggle />
                 <NotificationBell />
                 <Sheet open={open} onOpenChange={setOpen}>
                   <SheetTrigger asChild>
