@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabaseClient';
@@ -11,13 +11,22 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 
 export default function Auth() {
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
 
-  if (user) {
-    navigate('/dashboard', { replace: true });
-    return null;
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
   }
 
   const handleGoogleSignIn = async () => {
@@ -52,10 +61,10 @@ export default function Auth() {
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setFormLoading(true);
     const fd = new FormData(e.currentTarget);
     const { error } = await signIn(fd.get('email') as string, fd.get('password') as string);
-    setLoading(false);
+    setFormLoading(false);
     if (error) {
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
     } else {
@@ -65,14 +74,14 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setFormLoading(true);
     const fd = new FormData(e.currentTarget);
     const { error } = await signUp(
       fd.get('email') as string,
       fd.get('password') as string,
       fd.get('displayName') as string,
     );
-    setLoading(false);
+    setFormLoading(false);
     if (error) {
       toast({ title: 'Signup failed', description: error.message, variant: 'destructive' });
     } else {
@@ -122,8 +131,8 @@ export default function Auth() {
                   <Label htmlFor="login-password">Password</Label>
                   <Input id="login-password" name="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign In'}
+                <Button type="submit" className="w-full" disabled={formLoading}>
+                  {formLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
             </TabsContent>
@@ -141,8 +150,8 @@ export default function Auth() {
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" name="password" type="password" required minLength={6} />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Creating account...' : 'Create Account'}
+                <Button type="submit" className="w-full" disabled={formLoading}>
+                  {formLoading ? 'Creating account...' : 'Create Account'}
                 </Button>
               </form>
             </TabsContent>
