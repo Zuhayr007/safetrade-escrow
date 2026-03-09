@@ -27,9 +27,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <div className="fixed bottom-4 right-4 z-[100]">
-        <ThemeToggle />
-      </div>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />

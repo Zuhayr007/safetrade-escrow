@@ -93,10 +93,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <>
-              {/* Desktop nav */}
-              <div className="hidden md:flex items-center gap-2">
-                {navItems}
+            {user && (
+              <>
+                {/* Desktop nav */}
+                <div className="hidden md:flex items-center gap-2">
                 <NotificationBell />
                 <Popover>
                   <PopoverTrigger asChild>
