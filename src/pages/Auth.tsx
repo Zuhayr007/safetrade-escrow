@@ -125,7 +125,7 @@ export default function Auth() {
     toast({
       title: "Account created",
       description:
-        "Check your email to confirm, or log in if email confirmation is disabled.",
+        "Your account has been created successfully.",
     });
 
     window.location.replace("/dashboard");
