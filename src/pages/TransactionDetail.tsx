@@ -164,7 +164,7 @@ export default function TransactionDetail() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-muted-foreground">Amount</p>
                 <p className="font-semibold text-lg">{formatCents(txn.amount_cents, txn.currency)}</p>

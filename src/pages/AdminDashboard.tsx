@@ -71,17 +71,17 @@ export default function AdminDashboard() {
           {transactions.map(t => (
             <Link key={t.id} to={`/transactions/${t.id}`}>
               <Card className="hover:bg-muted/30 transition-colors cursor-pointer">
-                <CardContent className="flex items-center justify-between p-4 gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="font-semibold truncate">{t.title}</h3>
+                <CardContent className="flex items-center justify-between p-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold">{t.title}</h3>
                       <StatusBadge status={t.status} />
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-sm text-muted-foreground">
                       {t.buyer?.display_name} → {t.seller?.display_name || t.seller_email_invited}
                     </p>
                   </div>
-                  <p className="font-semibold shrink-0">{formatCents(t.amount_cents)}</p>
+                  <p className="font-semibold">{formatCents(t.amount_cents)}</p>
                 </CardContent>
               </Card>
             </Link>

@@ -1,54 +1,43 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function AuthCallback() {
-  const navigate = useNavigate();
-  const [error, setError] = useState(false);
-
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setError(true);
-    }, 10000);
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        clearTimeout(timeout);
-        navigate('/dashboard', { replace: true });
-      }
-    });
+    const init = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    // Also check if already signed in (back-button scenario)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        clearTimeout(timeout);
-        navigate('/dashboard', { replace: true });
+      if (session && isMounted) {
+        window.location.replace("/dashboard");
+        return;
       }
-    });
+
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!isMounted) return;
+
+        if (event === "SIGNED_IN" && session) {
+          window.location.replace("/dashboard");
+        }
+      });
+
+      unsubscribe = () => data.subscription.unsubscribe();
+    };
+
+    init();
 
     return () => {
-      clearTimeout(timeout);
-      subscription.unsubscribe();
+      isMounted = false;
+      unsubscribe?.();
     };
-  }, [navigate]);
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-        <p className="text-destructive font-medium">Sign-in failed or session expired.</p>
-        <button
-          onClick={() => navigate('/auth', { replace: true })}
-          className="text-primary underline"
-        >
-          Return to login
-        </button>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <p className="text-muted-foreground">Completing sign-in...</p>
+      <p className="text-muted-foreground">Signing in...</p>
     </div>
   );
 }
