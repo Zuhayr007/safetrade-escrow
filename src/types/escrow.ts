@@ -24,6 +24,13 @@ export interface Profile {
   user_id: string;
   display_name: string;
   email: string;
+  full_name: string | null;
+  phone: string | null;
+  id_number: string | null;
+  address: string | null;
+  id_document_url: string | null;
+  kyc_status: KycStatus;
+  kyc_rejected_reason: string | null;
   created_at: string;
   updated_at: string;
 }
