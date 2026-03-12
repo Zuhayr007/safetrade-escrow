@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { User, Session } from "@supabase/supabase-js";
-import type { Profile, AppRole } from "@/types/escrow";
+import type { Profile, AppRole, KycStatus } from "@/types/escrow";
 
 interface AuthState {
   user: User | null;
