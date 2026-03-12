@@ -56,6 +56,8 @@ const App = () => (
               }
             />
 
+            <Route path="/kyc-pending" element={<KycPending />} />
+
             <Route
               path="/dashboard"
               element={
