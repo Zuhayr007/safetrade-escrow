@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminDisputes from "./pages/AdminDisputes";
 import AdminUsers from "./pages/AdminUsers";
 import Profile from "./pages/Profile";
+import KycPending from "./pages/KycPending";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,8 @@ const App = () => (
                 </PublicRoute>
               }
             />
+
+            <Route path="/kyc-pending" element={<KycPending />} />
 
             <Route
               path="/dashboard"

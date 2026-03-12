@@ -17,12 +17,20 @@ export type PaymentStatus = 'PENDING' | 'COMPLETE' | 'FAILED';
 export type DisputeStatus = 'open' | 'under_review' | 'resolved';
 export type InvitationStatus = 'pending' | 'accepted' | 'expired';
 export type AppRole = 'buyer' | 'seller' | 'admin';
+export type KycStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Profile {
   id: string;
   user_id: string;
   display_name: string;
   email: string;
+  full_name: string | null;
+  phone: string | null;
+  id_number: string | null;
+  address: string | null;
+  id_document_url: string | null;
+  kyc_status: KycStatus;
+  kyc_rejected_reason: string | null;
   created_at: string;
   updated_at: string;
 }

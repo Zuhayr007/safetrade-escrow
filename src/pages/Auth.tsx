@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { KycSignupForm } from "@/components/KycSignupForm";
 
 export default function Auth() {
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, user, loading } = useAuth();
   const [authLoading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -100,37 +101,6 @@ export default function Auth() {
     window.location.replace("/dashboard");
   };
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const fd = new FormData(e.currentTarget);
-    const { error } = await signUp(
-      fd.get("email") as string,
-      fd.get("password") as string,
-      fd.get("displayName") as string,
-    );
-
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Signup failed",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Account created",
-      description:
-        "Your account has been created successfully.",
-    });
-
-    window.location.replace("/dashboard");
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -202,29 +172,9 @@ export default function Auth() {
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4 mt-4">
-                <div>
-                  <Label htmlFor="signup-name">Display Name</Label>
-                  <Input id="signup-name" name="displayName" required />
-                </div>
-                <div>
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input id="signup-email" name="email" type="email" required />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    name="password"
-                    type="password"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={authLoading}>
-                  {authLoading ? "Creating account..." : "Create Account"}
-                </Button>
-              </form>
+              <div className="mt-4">
+                <KycSignupForm onComplete={() => window.location.replace("/dashboard")} />
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import type { AppRole } from "@/types/escrow";
@@ -9,8 +9,21 @@ interface Props {
 }
 
 export function ProtectedRoute({ children, requiredRole }: Props) {
-  const { user, loading, hasRole } = useAuth();
+  const { user, loading, hasRole, profile } = useAuth();
   const location = useLocation();
+
+  // Prevent back navigation to auth pages
+  useEffect(() => {
+    if (!user) return;
+
+    const handlePopState = () => {
+      window.history.pushState(null, "", location.pathname);
+    };
+
+    window.history.pushState(null, "", location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [user, location.pathname]);
 
   if (loading) {
     return (
@@ -22,6 +35,11 @@ export function ProtectedRoute({ children, requiredRole }: Props) {
 
   if (!user) {
     return <Navigate to="/auth" replace state={{ from: location }} />;
+  }
+
+  // Check KYC status — redirect to pending page if not approved
+  if (profile && profile.kyc_status !== "approved") {
+    return <Navigate to="/kyc-pending" replace />;
   }
 
   if (requiredRole && !hasRole(requiredRole)) {
