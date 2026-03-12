@@ -17,6 +17,7 @@ export type PaymentStatus = 'PENDING' | 'COMPLETE' | 'FAILED';
 export type DisputeStatus = 'open' | 'under_review' | 'resolved';
 export type InvitationStatus = 'pending' | 'accepted' | 'expired';
 export type AppRole = 'buyer' | 'seller' | 'admin';
+export type KycStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Profile {
   id: string;
